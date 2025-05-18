@@ -10,7 +10,17 @@ router.get('/weather', async (req, res) => {
     }
     try {
         const weatherManager = new WeatherManager();
-        const data = await weatherManager.fetchWeatherData(city);
+        const weatherData = await weatherManager.fetchWeatherData(city);
+        if (!weatherData) {
+            return res.status(404).json({ error: 'Weather data not found' });
+        }
+        const data = {
+            location: weatherData.location.name,
+            last_updated: weatherData.current.last_updated,
+            temperature: weatherData.current.temp_c,
+            humidity: weatherData.current.humidity,
+            condition: weatherData.current.condition.text,
+        };
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch weather data' });
