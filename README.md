@@ -69,6 +69,9 @@
 
 Всі міграції знаходяться у папці `migrations/`.
 
+## Налаштування SMTP інтеграції для розсилки
+Ознайомтесь, будь ласка, з цією [статтею](https://help.mailtrap.io/article/122-mailtrap-email-sending-smtp-integration). Оберіть Transactional Stream та впишіть параметри в `.env`.
+
 ## Автор
 
 Oleksandr Bazhyn
