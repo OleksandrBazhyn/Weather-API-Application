@@ -79,4 +79,21 @@ router.get('/confirm/:token', async (req, res) => {
     }
 });
 
+router.get('/unsubscribe/:token', async (req, res) => {
+    const { token } = req.params;
+    try {
+        const updated = await db('subscriptions')
+            .where({ token })
+            .update({ is_active: false });
+        if (updated) {
+            return res.status(200).send('You have unsubscribed from weather updates.');
+        } else {
+            return res.status(404).send('Invalid or expired token.');
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('Internal server error');
+    }
+});
+
 export default router;

@@ -49,6 +49,11 @@ class Mailer {
                             <li>Humidity: ${weatherData.current.humidity}%</li>
                             <li>Description: ${weatherData.current.condition.text}</li>
                         </ul>
+                        <p>
+                            <a href="http://localhost:3000/api/unsubscribe/${sub.token}">
+                                Unsubscribe from weather updates
+                            </a>
+                        </p>
                     `,
                 });
                 console.log(`Email sent to ${sub.email} (${sub.city})`);
