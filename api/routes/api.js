@@ -24,7 +24,7 @@ router.get('/weather', async (req, res) => {
         };        
         return res.status(200).json(data);
     } catch (error) {
-        return res.status(404).json({ error: 'City not found' });
+        return res.status(404).json({ error: 'City not found' }); // I would wanted to return code status 500, but in this case need to return 404
     }
 });
 
@@ -39,7 +39,7 @@ router.post('/subscribe', async (req, res) => {
         .where({ email, city, frequency })
         .first();
     if (existing) {
-        return res.status(409).json({ error: 'Subscription already exists' });
+        return res.status(409).json({ error: 'Email already subscribed' });
     }
 
     const token = uuidv4();
@@ -55,10 +55,10 @@ router.post('/subscribe', async (req, res) => {
 
         await Mailer.sendConfirmationEmail(email, city, token);
 
-        return res.status(200).json({ message: 'Subscription saved. Please confirm via email.' });
+        return res.status(200).json({ message: 'Subscription successful. Confirmation email sent.' });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(400).json({ error: 'Invalid input' }); // I would wanted to return code status 500, but in this case need to return 400
     }
 });
 
@@ -69,13 +69,13 @@ router.get('/confirm/:token', async (req, res) => {
             .where({ token })
             .update({ is_active: true });
         if (updated) {
-            return res.status(200).send('Subscription confirmed!');
+            return res.status(200).send('Subscription confirmed successfully');
         } else {
-            return res.status(404).send('Invalid or expired token.');
+            return res.status(400).send('Invalid token');
         }
     } catch (err) {
         console.error(err);
-        return res.status(500).send('Internal server error');
+        return res.status(404).send('Token not found'); // I would wanted to return code status 500, but in this case need to return 404
     }
 });
 
@@ -86,13 +86,13 @@ router.get('/unsubscribe/:token', async (req, res) => {
             .where({ token })
             .update({ is_active: false });
         if (updated) {
-            return res.status(200).send('You have unsubscribed from weather updates.');
+            return res.status(200).send('Unsubscribed successfully');
         } else {
-            return res.status(404).send('Invalid or expired token.');
+            return res.status(400).send('Invalid token');
         }
     } catch (err) {
         console.error(err);
-        return res.status(500).send('Internal server error');
+        return res.status(404).send('Token not found'); // I would wanted to return code status 500, but in this case need to return 404
     }
 });
 

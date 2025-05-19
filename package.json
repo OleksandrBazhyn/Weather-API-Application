@@ -7,7 +7,7 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start": "node app.js",
     "dev": "nodemon app.js",
     "build": "echo \"Error: no build specified\" && exit 1"
@@ -24,5 +24,9 @@
     "pg": "^8.16.0",
     "uuid": "^11.1.0",
     "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.1.1"
   }
 }

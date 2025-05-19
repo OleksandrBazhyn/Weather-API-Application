@@ -17,17 +17,12 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-// Перевірка зв'язку з БД
-db.raw('SELECT 1')
-  .then(() => console.log('✅ Звʼязок з БД встановлено!'))
-  .catch(err => console.error('❌ Помилка підключення до БД:', err));
-
-// Щогодини (на початку кожної години)
+// Hourly (at the beginning of each hour)
 cron.schedule('0 * * * *', () => {
     Mailer.sendWeatherEmails('hourly');
 });
 
-// Щодня о 8:00 ранку
+// Every day at 8:00 am
 cron.schedule('0 8 * * *', () => {
     Mailer.sendWeatherEmails('daily');
 });

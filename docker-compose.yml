@@ -19,9 +19,16 @@ services:
     depends_on:
       - db
     env_file:
-      - .env
+      - .env.docker
     restart: unless-stopped
     command: sh -c "npx knex migrate:latest && npm start"
+  test:
+    build: .
+    command: npm test
+    env_file:
+      - .env.docker
+    depends_on:
+      - db
 volumes:
   db_data:
     driver: local
