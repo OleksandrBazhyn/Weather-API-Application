@@ -1,8 +1,8 @@
 import express from 'express';
 import WeatherManager from '../managers/WeatherManager.js';
 import db from '../../db/knex.js';
-import nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
+import Mailer from '../managers/Mailer.js';
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.get('/weather', async (req, res) => {
             humidity: weatherData.current.humidity,
             description: weatherData.current.condition.text,
         };        
-        return res.status(200).json(data);;
+        return res.status(200).json(data);
     } catch (error) {
         return res.status(404).json({ error: 'City not found' });
     }
@@ -35,45 +35,25 @@ router.post('/subscribe', async (req, res) => {
         return res.status(400).json({ error: 'Invalid input' });
     }
 
-    /*
     const existing = await db('subscriptions')
         .where({ email, city, frequency })
         .first();
     if (existing) {
         return res.status(409).json({ error: 'Subscription already exists' });
-    } */
+    }
 
     const token = uuidv4();
 
     try {
-        console.log('DATABASE_URL:', process.env.DATABASE_URL);
-        console.log('Before insert');
-        const result = await db('subscriptions').insert({
+        await db('subscriptions').insert({
             email,
             city,
             frequency,
             token,
             is_active: false
         });
-        console.log('After insert, result:', result);
 
-        const link = `http://localhost:3000/api/confirm/${token}`;
-
-        const transporter = nodemailer.createTransport({
-        host: 'live.smtp.mailtrap.io',
-        port: 587,
-        auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-        },
-        });
-
-        await transporter.sendMail({
-        from: 'hello@testbazhyn.io',
-        to: email,
-        subject: 'Confirm your subscription',
-        html: `<p>Click <a href="${link}">here</a> to confirm your subscription</p>`,
-        });
+        await Mailer.sendConfirmationEmail(email, city, token);
 
         return res.status(200).json({ message: 'Subscription saved. Please confirm via email.' });
     } catch (err) {
