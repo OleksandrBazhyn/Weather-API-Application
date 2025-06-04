@@ -208,7 +208,7 @@ export default function App() {
       </section>
 
       {/* Live Weather Updates (WebSocket) */}
-      <section style={{ marginTop: 30, padding: 10, border: "1px solid #99f", borderRadius: 8, background: "#f8faff" }}>
+      <section style={{ marginTop: 30, padding: 10, border: "1px solid #99f", borderRadius: 8 }}>
         <h4>Live Weather Updates (WebSocket)</h4>
         <form onSubmit={handleWsSubscribe}>
           <input
