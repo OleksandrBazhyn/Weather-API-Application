@@ -5,8 +5,7 @@ import WeatherManager from './WeatherManager.js';
 class Mailer {
     constructor() {
         this.transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: 587,
+            service: 'gmail',
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS,
@@ -15,6 +14,7 @@ class Mailer {
     }
 
     async sendConfirmationEmail(email, city, token) {
+        console.log('Sending confirmation email to:', email);
         const link = `http://localhost:3000/api/confirm/${token}`;
         await this.transporter.sendMail({
             from: process.env.SMTP_FROM,

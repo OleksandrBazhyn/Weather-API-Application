@@ -24,7 +24,7 @@ router.get('/weather', async (req, res) => {
         };        
         return res.status(200).json(data);
     } catch (error) {
-        return res.status(404).json({ error: 'City not found' }); // I would wanted to return code status 500, but in this case need to return 404
+        return res.status(404).json({ error: 'City not found' });
     }
 });
 
@@ -34,7 +34,6 @@ router.post('/subscribe', async (req, res) => {
     if (!email || !city || !frequency || !['daily', 'hourly'].includes(frequency)) {
         return res.status(400).json({ error: 'Invalid input' });
     }
-
     const existing = await db('subscriptions')
         .where({ email, city, frequency })
         .first();
@@ -43,8 +42,8 @@ router.post('/subscribe', async (req, res) => {
     }
 
     const token = uuidv4();
-
     try {
+        console.log('Inserting subscription into database:', { email, city, frequency, token });
         await db('subscriptions').insert({
             email,
             city,
@@ -52,13 +51,12 @@ router.post('/subscribe', async (req, res) => {
             token,
             is_active: false
         });
-
         await Mailer.sendConfirmationEmail(email, city, token);
 
         return res.status(200).json({ message: 'Subscription successful. Confirmation email sent.' });
     } catch (err) {
         console.error(err);
-        return res.status(400).json({ error: 'Invalid input' }); // I would wanted to return code status 500, but in this case need to return 400
+        return res.status(400).json({ error: 'Invalid input' });
     }
 });
 
@@ -75,25 +73,26 @@ router.get('/confirm/:token', async (req, res) => {
         }
     } catch (err) {
         console.error(err);
-        return res.status(404).send('Token not found'); // I would wanted to return code status 500, but in this case need to return 404
+        return res.status(404).send('Token not found');
     }
 });
 
 router.get('/unsubscribe/:token', async (req, res) => {
     const { token } = req.params;
     try {
-        const updated = await db('subscriptions')
+        const deleted = await db('subscriptions')
             .where({ token })
-            .update({ is_active: false });
-        if (updated) {
-            return res.status(200).send('Unsubscribed successfully');
+            .del();
+        if (deleted) {
+            return res.status(200).send('Unsubscribed and deleted successfully');
         } else {
             return res.status(400).send('Invalid token');
         }
     } catch (err) {
         console.error(err);
-        return res.status(404).send('Token not found'); // I would wanted to return code status 500, but in this case need to return 404
+        return res.status(500).send('Server error');
     }
 });
+
 
 export default router;
