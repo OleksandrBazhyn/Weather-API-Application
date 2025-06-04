@@ -2,7 +2,6 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import apiRoutes from "./api/routes/api.js";
-import db from "./db/knex.js";
 import cron from "node-cron";
 import Mailer from "./api/managers/Mailer.js";
 
